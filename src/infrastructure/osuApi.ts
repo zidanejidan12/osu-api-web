@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
+import * as osu from "osu-api-v2-js"
 dotenv.config();
 
 export const createOsuApiClient = async () => {
-  const osu = await import('osu-api-v2-js');
   return await osu.API.createAsync({
     id: Number(process.env.OSU_CLIENT_ID!),
     secret: process.env.OSU_CLIENT_SECRET!,
