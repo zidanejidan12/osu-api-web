@@ -27,3 +27,13 @@ export const getData = (userId) => __awaiter(void 0, void 0, void 0, function* (
         throw error;
     }
 });
+export const getBeatmapData = (beatmapId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const api = yield createOsuApiClient();
+        return yield api.getBeatmap(Number(beatmapId));
+    }
+    catch (error) {
+        console.error(`Error fetching beatmap data for ID ${beatmapId}:`, error);
+        throw error;
+    }
+});

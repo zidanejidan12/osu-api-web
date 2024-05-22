@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './infrastructure/databases/mongoDb';
 import osuUserRoutes from './interfaces/routes/osuUserRoutes';
 import osuTeamRoutes from './interfaces/routes/osuTeamRoutes';
+import osuBeatmapRoutes from './interfaces/routes/osuBeatmapRoutes';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 // Routes
 app.use('/api', osuUserRoutes);
 app.use('/api', osuTeamRoutes);
+app.use('/api', osuBeatmapRoutes);
 
 // Start the server
 app.listen(PORT, () => {

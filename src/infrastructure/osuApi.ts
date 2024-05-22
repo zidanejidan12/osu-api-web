@@ -19,3 +19,13 @@ export const getData = async (userId: string) => {
     throw error;
   }
 };
+
+export const getBeatmapData = async (beatmapId: string) => {
+  try {
+    const api = await createOsuApiClient();
+    return await api.getBeatmap(Number(beatmapId));
+  } catch (error) {
+    console.error(`Error fetching beatmap data for ID ${beatmapId}:`, error);
+    throw error;
+  }
+};
