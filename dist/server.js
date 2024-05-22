@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './infrastructure/databases/mongoDb.js';
 import osuUserRoutes from './interfaces/routes/osuUserRoutes.js';
+import osuTeamRoutes from './interfaces/routes/osuTeamRoutes.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8086;
@@ -18,6 +19,7 @@ connectDB()
 app.use(express.json());
 // Routes
 app.use('/api', osuUserRoutes);
+app.use('/api', osuTeamRoutes);
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
