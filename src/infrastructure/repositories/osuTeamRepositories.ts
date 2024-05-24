@@ -17,3 +17,11 @@ export const getTeamById = async (teamId: string) => {
   }
 };
 
+export const getAllTeams = async () => {
+  try {
+    return await Team.find({});
+  } catch (error) {
+    throw new Error('Failed to get teams');
+  }
+};
+

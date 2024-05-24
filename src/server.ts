@@ -5,6 +5,7 @@ import osuUserRoutes from './interfaces/routes/osuUserRoutes';
 import osuTeamRoutes from './interfaces/routes/osuTeamRoutes';
 import osuBeatmapRoutes from './interfaces/routes/osuBeatmapRoutes';
 import osuMappoolRoutes from './interfaces/routes/osuMappoolRoutes';
+import osuScheduleRoutes from './interfaces/routes/osuScheduleRoutes';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use('/api', osuUserRoutes);
 app.use('/api', osuTeamRoutes);
 app.use('/api', osuBeatmapRoutes);
 app.use('/api', osuMappoolRoutes);
+app.use('/api', osuScheduleRoutes);
 
 // Start the server
 app.listen(PORT, () => {

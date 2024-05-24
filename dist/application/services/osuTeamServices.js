@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { getData } from '../../infrastructure/osuApi.js';
-import { saveTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
+import { getAllTeams, getTeamById, saveTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 export const fetchUserData = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield getData(userId);
@@ -30,4 +30,14 @@ export const createTeam = (name, userIds) => __awaiter(void 0, void 0, void 0, f
         updatedAt: new Date()
     };
     return yield saveTeam(newTeam);
+});
+export const fetchAllTeams = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield getAllTeams();
+});
+export const fetchTeamById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const team = yield getTeamById(id);
+    if (!team) {
+        throw new Error('Team not found');
+    }
+    return team;
 });

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createTeam } from '../../application/services/osuTeamServices.js';
+import { createTeam, fetchAllTeams, fetchTeamById } from '../../application/services/osuTeamServices.js';
 export const postCreateTeam = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, usernames } = req.body;
@@ -21,6 +21,42 @@ export const postCreateTeam = (req, res) => __awaiter(void 0, void 0, void 0, fu
         console.error(`Error creating team:`, error);
         if (error instanceof Error) {
             res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        }
+        else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+});
+export const getAllTeams = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const teams = yield fetchAllTeams();
+        res.status(200).json(teams);
+    }
+    catch (error) {
+        console.error('Error fetching teams:', error);
+        if (error instanceof Error) {
+            res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        }
+        else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+});
+export const getTeamById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const team = yield fetchTeamById(id);
+        res.status(200).json(team);
+    }
+    catch (error) {
+        console.error('Error fetching team:', error);
+        if (error instanceof Error) {
+            if (error.message === 'Team not found') {
+                res.status(404).json({ message: error.message });
+            }
+            else {
+                res.status(500).json({ message: 'Internal Server Error', error: error.message });
+            }
         }
         else {
             res.status(500).json({ message: 'Internal Server Error' });

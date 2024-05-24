@@ -1,5 +1,5 @@
 import { getData } from '../../infrastructure/osuApi';
-import { saveTeam } from '../../infrastructure/repositories/osuTeamRepositories';
+import { getAllTeams, getTeamById, saveTeam } from '../../infrastructure/repositories/osuTeamRepositories';
 import { BadRequestError } from '../errors/BadRequestError';
 
 export const fetchUserData = async (userId: string) => {
@@ -27,3 +27,16 @@ export const createTeam = async (name: string, userIds: string[]) => {
 
   return await saveTeam(newTeam);
 };
+
+export const fetchAllTeams = async () => {
+  return await getAllTeams();
+};
+
+export const fetchTeamById = async (id: string) => {
+  const team = await getTeamById(id);
+  if (!team) {
+    throw new Error('Team not found');
+  }
+  return team;
+};
+

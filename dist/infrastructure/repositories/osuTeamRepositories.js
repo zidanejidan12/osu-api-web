@@ -25,3 +25,11 @@ export const getTeamById = (teamId) => __awaiter(void 0, void 0, void 0, functio
         throw new Error('Failed to get team data');
     }
 });
+export const getAllTeams = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield Team.find({});
+    }
+    catch (error) {
+        throw new Error('Failed to get teams');
+    }
+});
