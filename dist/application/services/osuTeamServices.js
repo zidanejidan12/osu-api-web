@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { getData } from '../../infrastructure/osuApi.js';
-import { getAllTeams, getTeamById, saveTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
+import { getAllTeams, getTeamById, saveTeam, deleteTeam, updateTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 export const fetchUserData = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield getData(userId);
@@ -23,6 +23,19 @@ export const createTeam = (name, userIds) => __awaiter(void 0, void 0, void 0, f
         throw new BadRequestError('Invalid team data. A team must have a name and 4 to 6 members.');
     }
     const members = yield Promise.all(userIds.map(fetchUserData));
+    // Ensure no duplicate members in the same team
+    const memberIds = members.map(member => member.userId);
+    if (new Set(memberIds).size !== memberIds.length) {
+        throw new BadRequestError('Duplicate members found in the team.');
+    }
+    // Ensure no user is tied to more than one team
+    const allTeams = yield getAllTeams();
+    const allMemberIds = allTeams.flatMap(team => team.members.map((member) => member.userId));
+    for (const userId of userIds) {
+        if (allMemberIds.includes(userId)) {
+            throw new BadRequestError(`User with ID ${userId} is already part of another team.`);
+        }
+    }
     const newTeam = {
         name,
         members,
@@ -39,5 +52,55 @@ export const fetchTeamById = (id) => __awaiter(void 0, void 0, void 0, function*
     if (!team) {
         throw new Error('Team not found');
     }
+    return team;
+});
+export const deleteTeamById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const team = yield getTeamById(id);
+    if (!team) {
+        throw new Error('Team not found');
+    }
+    yield deleteTeam(id);
+});
+export const deleteMemberFromTeam = (teamId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const team = yield getTeamById(teamId);
+    if (!team) {
+        throw new Error('Team not found');
+    }
+    const updatedMembers = team.members.filter((member) => member.userId !== userId);
+    if (updatedMembers.length === team.members.length) {
+        throw new Error('Member not found in the team');
+    }
+    team.members = updatedMembers;
+    team.updatedAt = new Date();
+    yield updateTeam(teamId, team);
+    return team;
+});
+export const updateTeamMembers = (teamId, userIds) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!Array.isArray(userIds) || userIds.length < 4 || userIds.length > 6) {
+        throw new BadRequestError('A team must have 4 to 6 members.');
+    }
+    const members = yield Promise.all(userIds.map(fetchUserData));
+    // Ensure no duplicate members in the same team
+    const memberIds = members.map(member => member.userId);
+    if (new Set(memberIds).size !== memberIds.length) {
+        throw new BadRequestError('Duplicate members found in the team.');
+    }
+    // Ensure no user is tied to more than one team
+    const allTeams = yield getAllTeams();
+    const allMemberIds = allTeams
+        .filter(team => team._id.toString() !== teamId) // Exclude the current team
+        .flatMap(team => team.members.map((member) => member.userId));
+    for (const userId of userIds) {
+        if (allMemberIds.includes(userId)) {
+            throw new BadRequestError(`User with ID ${userId} is already part of another team.`);
+        }
+    }
+    const team = yield getTeamById(teamId);
+    if (!team) {
+        throw new Error('Team not found');
+    }
+    team.members = members;
+    team.updatedAt = new Date();
+    yield updateTeam(teamId, team);
     return team;
 });
