@@ -29,6 +29,6 @@ export const fetchSchedules = async () => {
   return await getSchedules();
 };
 
-export const fetchScheduleById = async (id: number) => {
+export const fetchScheduleById = async (id: string) => {
   return await getScheduleById(id);
 };

@@ -41,7 +41,7 @@ export const getSchedules = (req, res) => __awaiter(void 0, void 0, void 0, func
 export const getScheduleById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const schedule = yield fetchScheduleById(Number(id));
+        const schedule = yield fetchScheduleById(id);
         if (!schedule) {
             return res.status(404).json({ message: 'Schedule not found' });
         }

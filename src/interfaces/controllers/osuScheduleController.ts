@@ -35,7 +35,7 @@ export const getSchedules = async (req: Request, res: Response) => {
 export const getScheduleById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const schedule = await fetchScheduleById(Number(id));
+    const schedule = await fetchScheduleById(id);
 
     if (!schedule) {
       return res.status(404).json({ message: 'Schedule not found' });

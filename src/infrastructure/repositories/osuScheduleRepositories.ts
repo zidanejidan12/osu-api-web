@@ -8,6 +8,6 @@ export const getSchedules = async (): Promise<ISchedule[]> => {
   return await Schedule.find({});
 };
 
-export const getScheduleById = async (id: number): Promise<ISchedule | null> => {
+export const getScheduleById = async (id: string): Promise<ISchedule | null> => {
   return await Schedule.findById(id);
 };
