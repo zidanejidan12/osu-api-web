@@ -8,12 +8,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Schedule } from '../../domain/models/osuSchedule.js';
-export const saveSchedule = (schedule) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield schedule.save();
-});
-export const getSchedules = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield Schedule.find({});
+export const saveSchedule = (scheduleData) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const schedule = new Schedule(scheduleData);
+        return yield schedule.save();
+    }
+    catch (error) {
+        console.error('Error saving schedule data:', error);
+        throw new Error('Failed to save schedule data');
+    }
 });
 export const getScheduleById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield Schedule.findById(id);
+    try {
+        return yield Schedule.findById(id);
+    }
+    catch (error) {
+        console.error('Error getting schedule data:', error);
+        throw new Error('Failed to get schedule data');
+    }
+});
+export const getSchedules = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield Schedule.find({});
+    }
+    catch (error) {
+        console.error('Error getting schedules:', error);
+        throw new Error('Failed to get schedules');
+    }
+});
+export const updateSchedule = (id, updatedSchedule) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield Schedule.findByIdAndUpdate(id, updatedSchedule, { new: true });
+    }
+    catch (error) {
+        console.error('Error updating schedule:', error);
+        throw new Error('Failed to update schedule');
+    }
 });

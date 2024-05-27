@@ -7,25 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createSchedule, fetchSchedules, fetchScheduleById } from '../../application/services/osuScheduleServices.js';
-import { BadRequestError } from '../../application/errors/BadRequestError.js';
+import { createSchedule, fetchSchedules, fetchScheduleById, updateScheduleById } from '../../application/services/osuScheduleServices.js';
 export const postCreateSchedule = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { team1Id, team2Id, date } = req.body;
-        if (!team1Id || !team2Id || !date) {
-            return res.status(400).json({ message: 'Missing required fields: team1Id, team2Id, and date are required.' });
-        }
         const schedule = yield createSchedule(team1Id, team2Id, date);
         res.status(201).json(schedule);
     }
     catch (error) {
-        console.error(`Error creating schedule:`, error);
-        if (error instanceof BadRequestError) {
-            res.status(400).json({ message: error.message });
-        }
-        else {
-            res.status(500).json({ message: 'Internal Server Error', error: error instanceof Error ? error.message : 'Unknown error' });
-        }
+        console.error('Error creating schedule:', error);
+        res.status(500).json({ message: error.message });
     }
 });
 export const getSchedules = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,8 +25,8 @@ export const getSchedules = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(200).json(schedules);
     }
     catch (error) {
-        console.error(`Error fetching schedules:`, error);
-        res.status(500).json({ message: 'Internal Server Error', error: error instanceof Error ? error.message : 'Unknown error' });
+        console.error('Error fetching schedules:', error);
+        res.status(500).json({ message: error.message });
     }
 });
 export const getScheduleById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,7 +39,19 @@ export const getScheduleById = (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(200).json(schedule);
     }
     catch (error) {
-        console.error(`Error fetching schedule by ID:`, error);
-        res.status(500).json({ message: 'Internal Server Error', error: error instanceof Error ? error.message : 'Unknown error' });
+        console.error('Error fetching schedule by ID:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+export const putUpdateSchedule = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { team1Id, team2Id, date } = req.body;
+        const updatedSchedule = yield updateScheduleById(id, team1Id, team2Id, date);
+        res.status(200).json(updatedSchedule);
+    }
+    catch (error) {
+        console.error('Error updating schedule:', error);
+        res.status(500).json({ message: error.message });
     }
 });

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { saveSchedule, getSchedules, getScheduleById } from '../../infrastructure/repositories/osuScheduleRepositories.js';
+import { saveSchedule, getSchedules, getScheduleById, updateSchedule } from '../../infrastructure/repositories/osuScheduleRepositories.js';
 import { getTeamById } from '../../infrastructure/repositories/osuTeamRepositories.js';
 import { Schedule } from '../../domain/models/osuSchedule.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
@@ -34,4 +34,24 @@ export const fetchSchedules = () => __awaiter(void 0, void 0, void 0, function* 
 });
 export const fetchScheduleById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield getScheduleById(id);
+});
+// New function to update a schedule
+export const updateScheduleById = (id, team1Id, team2Id, date) => __awaiter(void 0, void 0, void 0, function* () {
+    const team1 = yield getTeamById(team1Id);
+    const team2 = yield getTeamById(team2Id);
+    if (!team1) {
+        throw new BadRequestError(`Team with ID ${team1Id} does not exist.`);
+    }
+    if (!team2) {
+        throw new BadRequestError(`Team with ID ${team2Id} does not exist.`);
+    }
+    const updatedSchedule = {
+        team1Id: team1._id,
+        team1Name: team1.name,
+        team2Id: team2._id,
+        team2Name: team2.name,
+        date,
+        updatedAt: new Date()
+    };
+    return yield updateSchedule(id, updatedSchedule);
 });
