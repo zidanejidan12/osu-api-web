@@ -35,7 +35,7 @@ export const getBeatmapData = (beatmapId) => __awaiter(void 0, void 0, void 0, f
         // Mapping function to transform the raw API response to IBeatmap
         const mapBeatmapData = (data) => {
             return {
-                beatmapId: data.id,
+                beatmapId: data.beatmapId,
                 difficultyRating: data.difficulty_rating,
                 version: data.version,
                 accuracy: data.accuracy,

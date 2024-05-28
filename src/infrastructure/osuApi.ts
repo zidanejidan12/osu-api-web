@@ -30,7 +30,7 @@ export const getBeatmapData = async (beatmapId: string): Promise<IBeatmap> => {
     // Mapping function to transform the raw API response to IBeatmap
     const mapBeatmapData = (data: any): IBeatmap => {
       return {
-        beatmapId: data.id,
+        beatmapId: data.beatmapId,
         difficultyRating: data.difficulty_rating,
         version: data.version,
         accuracy: data.accuracy,
