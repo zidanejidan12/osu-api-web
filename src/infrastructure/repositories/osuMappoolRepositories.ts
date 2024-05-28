@@ -1,6 +1,6 @@
-import { Mappool } from '../../domain/models/osuMappool';
+import { Mappool, IMappool } from '../../domain/models/osuMappool';
 
-export const saveMappool = async (mappool: any) => {
+export const saveMappool = async (mappool: IMappool) => {
   const newMappool = new Mappool(mappool);
   return await newMappool.save();
 };

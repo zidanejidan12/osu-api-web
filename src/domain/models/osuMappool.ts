@@ -1,13 +1,24 @@
+// models/osuMappool.ts
 import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-interface IBeatmap {
-  beatmapId: string;
-  data: object;
+export interface IBeatmap {
+  beatmapId: number;
+  difficultyRating: number;
+  version: string;
+  accuracy: number;
+  ar: number;
+  bpm: number;
+  cs: number;
+  url: string;
+  artist: string;
+  cover: string;
+  creator: string;
+  title: string;
 }
 
-interface IMappool extends mongoose.Document {
+export interface IMappool extends mongoose.Document {
   name: string;
   beatmaps: IBeatmap[];
   createdAt: Date;
@@ -15,8 +26,18 @@ interface IMappool extends mongoose.Document {
 }
 
 const BeatmapSchema = new Schema<IBeatmap>({
-  beatmapId: { type: String, required: true },
-  data: { type: Object, required: true },
+  beatmapId: { type: Number, required: true },
+  difficultyRating: { type: Number, required: true },
+  version: { type: String, required: true },
+  accuracy: { type: Number, required: true },
+  ar: { type: Number, required: true },
+  bpm: { type: Number, required: true },
+  cs: { type: Number, required: true },
+  url: { type: String, required: true },
+  artist: { type: String, required: true },
+  cover: { type: String, required: true },
+  creator: { type: String, required: true },
+  title: { type: String, required: true },
 });
 
 const MappoolSchema = new Schema<IMappool>({

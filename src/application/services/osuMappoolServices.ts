@@ -1,13 +1,12 @@
+// services/osuMappoolServices.ts
 import { getBeatmapData } from '../../infrastructure/osuApi';
 import { saveMappool, getCachedMappool } from '../../infrastructure/repositories/osuMappoolRepositories';
 import { BadRequestError } from '../errors/BadRequestError';
+import { Mappool, IMappool, IBeatmap } from '../../domain/models/osuMappool';
 
-export const fetchBeatmapData = async (beatmapId: string) => {
+export const fetchBeatmapData = async (beatmapId: string): Promise<IBeatmap> => {
   const data = await getBeatmapData(beatmapId);
-  return {
-    beatmapId,
-    data,
-  };
+  return data;
 };
 
 export const createMappool = async (name: string, beatmapIds: string[]) => {
@@ -17,12 +16,12 @@ export const createMappool = async (name: string, beatmapIds: string[]) => {
 
   const beatmaps = await Promise.all(beatmapIds.map(fetchBeatmapData));
 
-  const newMappool = {
+  const newMappool: IMappool = new Mappool({
     name,
     beatmaps,
     createdAt: new Date(),
     updatedAt: new Date()
-  };
+  });
 
   return await saveMappool(newMappool);
 };

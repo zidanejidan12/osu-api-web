@@ -7,8 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// infrastructure/osuApi.ts
 import dotenv from 'dotenv';
-import * as osu from "osu-api-v2-js";
+import * as osu from 'osu-api-v2-js';
 dotenv.config();
 export const createOsuApiClient = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield osu.API.createAsync({
@@ -30,7 +31,25 @@ export const getData = (userId) => __awaiter(void 0, void 0, void 0, function* (
 export const getBeatmapData = (beatmapId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const api = yield createOsuApiClient();
-        return yield api.getBeatmap(Number(beatmapId));
+        const beatmapData = yield api.getBeatmap(Number(beatmapId));
+        // Mapping function to transform the raw API response to IBeatmap
+        const mapBeatmapData = (data) => {
+            return {
+                beatmapId: data.id,
+                difficultyRating: data.difficulty_rating,
+                version: data.version,
+                accuracy: data.accuracy,
+                ar: data.ar,
+                bpm: data.bpm,
+                cs: data.cs,
+                url: data.url,
+                artist: data.beatmapset.artist,
+                cover: data.beatmapset.covers.cover,
+                creator: data.beatmapset.creator,
+                title: data.beatmapset.title,
+            };
+        };
+        return mapBeatmapData(beatmapData);
     }
     catch (error) {
         console.error(`Error fetching beatmap data for ID ${beatmapId}:`, error);
