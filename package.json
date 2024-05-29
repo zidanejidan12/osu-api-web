@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "start": "ts-node src/server.ts"
+    "start": "node dist/server.js",
+    "build": "tsc"
   },
   "dependencies": {
     "express": "^4.17.1",
