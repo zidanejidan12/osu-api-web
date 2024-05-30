@@ -1,3 +1,4 @@
+// controllers/osuMappoolController.ts
 import { Request, Response } from 'express';
 import { createMappool, getMappool } from '../../application/services/osuMappoolServices';
 

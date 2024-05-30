@@ -1,3 +1,4 @@
+// infrastructure/repositories/osuMappoolRepositories.ts
 import { Mappool, IMappool } from '../../domain/models/osuMappool';
 
 export const saveMappool = async (mappool: IMappool) => {
@@ -6,5 +7,9 @@ export const saveMappool = async (mappool: IMappool) => {
 };
 
 export const getCachedMappool = async (name: string) => {
+  return await Mappool.findOne({ name });
+};
+
+export const getMappoolByName = async (name: string) => {
   return await Mappool.findOne({ name });
 };

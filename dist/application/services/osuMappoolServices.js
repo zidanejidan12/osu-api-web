@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { getBeatmapData } from '../../infrastructure/osuApi.js';
-import { saveMappool, getCachedMappool } from '../../infrastructure/repositories/osuMappoolRepositories.js';
+import { saveMappool, getCachedMappool, getMappoolByName } from '../../infrastructure/repositories/osuMappoolRepositories.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { Mappool } from '../../domain/models/osuMappool.js';
 export const fetchBeatmapData = (beatmapId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -20,6 +20,12 @@ export const createMappool = (name, beatmapIds) => __awaiter(void 0, void 0, voi
     if (!name || !Array.isArray(beatmapIds) || beatmapIds.length === 0) {
         console.error('Invalid mappool data: Missing name or beatmapIds');
         throw new BadRequestError('Invalid mappool data. A mappool must have a name and at least one beatmap.');
+    }
+    // Check for duplicate mappool name
+    const existingMappool = yield getMappoolByName(name);
+    if (existingMappool) {
+        console.error(`Mappool with name "${name}" already exists`);
+        throw new BadRequestError(`Mappool with name "${name}" already exists`);
     }
     console.log('Fetching beatmap data for IDs:', beatmapIds);
     const beatmaps = yield Promise.all(beatmapIds.map((id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -39,7 +45,6 @@ export const createMappool = (name, beatmapIds) => __awaiter(void 0, void 0, voi
             throw error;
         }
     })));
-    console.log('All beatmaps fetched:', beatmaps);
     const newMappool = new Mappool({
         name,
         beatmaps,
@@ -50,5 +55,28 @@ export const createMappool = (name, beatmapIds) => __awaiter(void 0, void 0, voi
     return yield saveMappool(newMappool);
 });
 export const getMappool = (name) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield getCachedMappool(name);
+    const mappool = yield getCachedMappool(name);
+    if (!mappool) {
+        throw new BadRequestError('Mappool not found');
+    }
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    if (mappool.updatedAt < oneWeekAgo) {
+        console.log(`Refreshing beatmap data for mappool "${name}"`);
+        const updatedBeatmaps = yield Promise.all(mappool.beatmaps.map((beatmap) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const updatedBeatmap = yield fetchBeatmapData(beatmap.beatmapId.toString());
+                console.log(`Fetched updated beatmap data for ID ${beatmap.beatmapId}:`, updatedBeatmap);
+                return updatedBeatmap;
+            }
+            catch (error) {
+                console.error(`Error fetching updated beatmap data for ID ${beatmap.beatmapId}:`, error);
+                return beatmap;
+            }
+        })));
+        mappool.beatmaps = updatedBeatmaps;
+        mappool.updatedAt = new Date();
+        yield mappool.save();
+    }
+    return mappool;
 });

@@ -1,7 +1,7 @@
 // services/osuMappoolServices.ts
 
 import { getBeatmapData } from '../../infrastructure/osuApi';
-import { saveMappool, getCachedMappool } from '../../infrastructure/repositories/osuMappoolRepositories';
+import { saveMappool, getCachedMappool, getMappoolByName } from '../../infrastructure/repositories/osuMappoolRepositories';
 import { BadRequestError } from '../errors/BadRequestError';
 import { Mappool, IMappool, IBeatmap } from '../../domain/models/osuMappool';
 
@@ -14,6 +14,13 @@ export const createMappool = async (name: string, beatmapIds: string[]) => {
   if (!name || !Array.isArray(beatmapIds) || beatmapIds.length === 0) {
     console.error('Invalid mappool data: Missing name or beatmapIds');
     throw new BadRequestError('Invalid mappool data. A mappool must have a name and at least one beatmap.');
+  }
+
+  // Check for duplicate mappool name
+  const existingMappool = await getMappoolByName(name);
+  if (existingMappool) {
+    console.error(`Mappool with name "${name}" already exists`);
+    throw new BadRequestError(`Mappool with name "${name}" already exists`);
   }
 
   console.log('Fetching beatmap data for IDs:', beatmapIds);
@@ -37,8 +44,6 @@ export const createMappool = async (name: string, beatmapIds: string[]) => {
     }
   }));
 
-  console.log('All beatmaps fetched:', beatmaps);
-
   const newMappool: IMappool = new Mappool({
     name,
     beatmaps,
@@ -52,5 +57,33 @@ export const createMappool = async (name: string, beatmapIds: string[]) => {
 };
 
 export const getMappool = async (name: string) => {
-  return await getCachedMappool(name);
+  const mappool = await getCachedMappool(name);
+
+  if (!mappool) {
+    throw new BadRequestError('Mappool not found');
+  }
+
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+  if (mappool.updatedAt < oneWeekAgo) {
+    console.log(`Refreshing beatmap data for mappool "${name}"`);
+
+    const updatedBeatmaps = await Promise.all(mappool.beatmaps.map(async (beatmap) => {
+      try {
+        const updatedBeatmap = await fetchBeatmapData(beatmap.beatmapId.toString());
+        console.log(`Fetched updated beatmap data for ID ${beatmap.beatmapId}:`, updatedBeatmap);
+        return updatedBeatmap;
+      } catch (error) {
+        console.error(`Error fetching updated beatmap data for ID ${beatmap.beatmapId}:`, error);
+        return beatmap;
+      }
+    }));
+
+    mappool.beatmaps = updatedBeatmaps;
+    mappool.updatedAt = new Date();
+    await mappool.save();
+  }
+
+  return mappool;
 };
