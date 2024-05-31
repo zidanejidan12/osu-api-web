@@ -58,6 +58,17 @@ export const fetchTeamById = (id) => __awaiter(void 0, void 0, void 0, function*
     }
     return team;
 });
+export const fetchTeamByUsername = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!username) {
+        throw new BadRequestError('Username is required.');
+    }
+    const allTeams = yield getAllTeams();
+    const teamsWithUsername = allTeams.filter(team => team.members.some((member) => member.data.username === username));
+    if (teamsWithUsername.length === 0) {
+        throw new Error(`No teams found with a member having the username ${username}`);
+    }
+    return teamsWithUsername;
+});
 export const deleteTeamById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const team = yield getTeamById(id);
     if (!team) {

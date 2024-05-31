@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createTeam, fetchAllTeams, fetchTeamById, deleteTeamById, deleteMemberFromTeam, updateTeamMembers } from '../../application/services/osuTeamServices.js';
+import { createTeam, fetchAllTeams, fetchTeamById, fetchTeamByUsername, deleteTeamById, deleteMemberFromTeam, updateTeamMembers } from '../../application/services/osuTeamServices.js';
 import { BadRequestError } from '../../application/errors/BadRequestError.js';
 export const postCreateTeam = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -82,6 +82,17 @@ export const updateTeamMembersById = (req, res) => __awaiter(void 0, void 0, voi
     }
     catch (error) {
         console.error(`Error updating team members:`, error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+export const getTeamsByUsername = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { username } = req.params;
+        const teams = yield fetchTeamByUsername(username);
+        res.status(200).json(teams);
+    }
+    catch (error) {
+        console.error(`Error fetching teams by username:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 });

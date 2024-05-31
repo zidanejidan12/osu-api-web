@@ -63,3 +63,15 @@ export const getTeamByName = (name) => __awaiter(void 0, void 0, void 0, functio
         throw new Error('Failed to get team by name');
     }
 });
+export const getTeamByUsername = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const teams = yield Team.find({
+            'members.data.username': username
+        });
+        return teams;
+    }
+    catch (error) {
+        console.error('Error getting teams by username', error);
+        throw new Error('Failed to get teams by username');
+    }
+});

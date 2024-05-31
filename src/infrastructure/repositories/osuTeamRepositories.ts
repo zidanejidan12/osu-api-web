@@ -54,3 +54,15 @@ export const getTeamByName = async (name: string): Promise<any | null> => {
     throw new Error('Failed to get team by name');
   }
 };
+
+export const getTeamByUsername = async (username: string): Promise<any[]> => {
+  try {
+    const teams = await Team.find({
+      'members.data.username': username
+    });
+    return teams;
+  } catch (error) {
+    console.error('Error getting teams by username', error);
+    throw new Error('Failed to get teams by username');
+  }
+};

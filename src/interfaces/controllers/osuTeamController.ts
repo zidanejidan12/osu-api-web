@@ -1,6 +1,6 @@
 // osuTeamController.ts
 import { Request, Response } from 'express';
-import { createTeam, fetchAllTeams, fetchTeamById, deleteTeamById, deleteMemberFromTeam, updateTeamMembers } from '../../application/services/osuTeamServices';
+import { createTeam, fetchAllTeams, fetchTeamById, fetchTeamByUsername, deleteTeamById, deleteMemberFromTeam, updateTeamMembers } from '../../application/services/osuTeamServices';
 import { BadRequestError } from '../../application/errors/BadRequestError';
 
 export const postCreateTeam = async (req: Request, res: Response) => {
@@ -73,6 +73,17 @@ export const updateTeamMembersById = async (req: Request, res: Response) => {
     res.status(200).json(team);
   } catch (error: any) {
     console.error(`Error updating team members:`, error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
+
+export const getTeamsByUsername = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.params;
+    const teams = await fetchTeamByUsername(username);
+    res.status(200).json(teams);
+  } catch (error: any) {
+    console.error(`Error fetching teams by username:`, error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };

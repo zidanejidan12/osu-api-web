@@ -60,6 +60,23 @@ export const fetchTeamById = async (id: string) => {
   return team;
 };
 
+export const fetchTeamByUsername = async (username: string) => {
+  if (!username) {
+    throw new BadRequestError('Username is required.');
+  }
+
+  const allTeams = await getAllTeams();
+  const teamsWithUsername = allTeams.filter(team => 
+    team.members.some((member: { data: { username: string; }; }) => member.data.username === username)
+  );
+
+  if (teamsWithUsername.length === 0) {
+    throw new Error(`No teams found with a member having the username ${username}`);
+  }
+
+  return teamsWithUsername;
+};
+
 export const deleteTeamById = async (id: string) => {
   const team = await getTeamById(id);
   if (!team) {
