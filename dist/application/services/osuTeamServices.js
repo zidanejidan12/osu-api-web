@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { getData } from '../../infrastructure/osuApi.js';
-import { getAllTeams, getTeamById, saveTeam, deleteTeam, updateTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
+import { getAllTeams, getTeamById, getTeamByName, saveTeam, deleteTeam, updateTeam } from '../../infrastructure/repositories/osuTeamRepositories.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 export const fetchUserData = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield getData(userId);
@@ -21,6 +21,10 @@ export const fetchUserData = (userId) => __awaiter(void 0, void 0, void 0, funct
 export const createTeam = (name, userIds) => __awaiter(void 0, void 0, void 0, function* () {
     if (!name || !Array.isArray(userIds) || userIds.length < 4 || userIds.length > 6) {
         throw new BadRequestError('Invalid team data. A team must have a name and 4 to 6 members.');
+    }
+    const existingTeam = yield getTeamByName(name);
+    if (existingTeam) {
+        throw new BadRequestError(`A team with the name ${name} already exists.`);
     }
     const members = yield Promise.all(userIds.map(fetchUserData));
     // Ensure no duplicate members in the same team

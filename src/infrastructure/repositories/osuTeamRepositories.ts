@@ -45,3 +45,12 @@ export const updateTeam = async (teamId: string, updatedTeam: any): Promise<any 
     throw new Error('Failed to update team');
   }
 };
+
+export const getTeamByName = async (name: string): Promise<any | null> => {
+  try {
+    return await Team.findOne({ name });
+  } catch (error) {
+    console.error('Error getting team by name:', error);
+    throw new Error('Failed to get team by name');
+  }
+};

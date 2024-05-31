@@ -54,3 +54,12 @@ export const updateTeam = (teamId, updatedTeam) => __awaiter(void 0, void 0, voi
         throw new Error('Failed to update team');
     }
 });
+export const getTeamByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield Team.findOne({ name });
+    }
+    catch (error) {
+        console.error('Error getting team by name:', error);
+        throw new Error('Failed to get team by name');
+    }
+});

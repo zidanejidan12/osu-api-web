@@ -1,5 +1,5 @@
 import { getData } from '../../infrastructure/osuApi';
-import { getAllTeams, getTeamById, saveTeam, deleteTeam, updateTeam } from '../../infrastructure/repositories/osuTeamRepositories';
+import { getAllTeams, getTeamById, getTeamByName, saveTeam, deleteTeam, updateTeam } from '../../infrastructure/repositories/osuTeamRepositories';
 import { BadRequestError } from '../errors/BadRequestError';
 
 export const fetchUserData = async (userId: string) => {
@@ -14,6 +14,11 @@ export const fetchUserData = async (userId: string) => {
 export const createTeam = async (name: string, userIds: string[]) => {
   if (!name || !Array.isArray(userIds) || userIds.length < 4 || userIds.length > 6) {
     throw new BadRequestError('Invalid team data. A team must have a name and 4 to 6 members.');
+  }
+
+  const existingTeam = await getTeamByName(name);
+  if (existingTeam) {
+    throw new BadRequestError(`A team with the name ${name} already exists.`);
   }
 
   const members = await Promise.all(userIds.map(fetchUserData));

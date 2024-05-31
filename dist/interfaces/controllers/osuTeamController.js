@@ -8,15 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { createTeam, fetchAllTeams, fetchTeamById, deleteTeamById, deleteMemberFromTeam, updateTeamMembers } from '../../application/services/osuTeamServices.js';
+import { BadRequestError } from '../../application/errors/BadRequestError.js';
 export const postCreateTeam = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, userIds } = req.body;
         const team = yield createTeam(name, userIds);
         res.status(201).json(team);
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error creating team:`, error);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        if (error instanceof BadRequestError) {
+            res.status(400).json({ message: 'Bad Request', error: error.message });
+        }
+        else {
+            res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        }
     }
 });
 export const getAllTeams = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +30,7 @@ export const getAllTeams = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const teams = yield fetchAllTeams();
         res.status(200).json(teams);
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error fetching teams:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
@@ -40,7 +46,7 @@ export const getTeamById = (req, res) => __awaiter(void 0, void 0, void 0, funct
             res.status(200).json(team);
         }
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error fetching team by ID:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
@@ -51,7 +57,7 @@ export const removeTeamById = (req, res) => __awaiter(void 0, void 0, void 0, fu
         yield deleteTeamById(id);
         res.status(204).end();
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error deleting team by ID:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
@@ -62,7 +68,7 @@ export const removeMemberFromTeam = (req, res) => __awaiter(void 0, void 0, void
         yield deleteMemberFromTeam(teamId, userId);
         res.status(204).end();
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error removing member from team:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
@@ -74,7 +80,7 @@ export const updateTeamMembersById = (req, res) => __awaiter(void 0, void 0, voi
         const team = yield updateTeamMembers(id, userIds);
         res.status(200).json(team);
     }
-    catch (error) { // Specify the type of error as 'any'
+    catch (error) {
         console.error(`Error updating team members:`, error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
