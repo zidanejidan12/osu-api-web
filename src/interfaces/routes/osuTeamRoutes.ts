@@ -9,6 +9,6 @@ router.get('/teams/:id', getTeamById);
 router.delete('/teams/:id', removeTeamById);
 router.delete('/teams/:teamId/members/:userId', removeMemberFromTeam);
 router.put('/teams/:id/members', updateTeamMembersById);
-router.get('/teams/:username', getTeamsByUsername);
+router.get('/teams/username/:username', getTeamsByUsername);
 
 export default router;
